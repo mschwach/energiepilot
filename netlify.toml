@@ -5,10 +5,9 @@
   functions = "netlify/functions"
 
 [functions]
-  # falls du die JSON sicher mitnehmen willst (optional)
   included_files = ["netlify/functions/energiepilot_rules.json"]
 
-# (optional) HTML nicht cachen, damit Änderungen sofort sichtbar sind
+# HTML nicht cachen, damit Änderungen sofort sichtbar sind
 [[headers]]
   for = "/index.html"
   [headers.values]
