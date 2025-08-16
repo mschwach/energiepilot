@@ -1,12 +1,12 @@
 // netlify/functions/analyse.js
 
-// ✅ Regeln direkt require'n – so wird die JSON sicher mitgebündelt
+// ✅ Regeln direkt require'n – Netlify bündelt die JSON mit
 const rules = require('./energiepilot_rules.json');
 
 // Helper: einfache Bedingungsprüfungen
 function passes(cond, data) {
   const v = data?.[cond.field];
-  if (cond.eq !== undefined)  return v === cond.eq;
+  if (cond.eq  !== undefined) return v === cond.eq;
   if (cond.lte !== undefined) return Number(v) <= Number(cond.lte);
   if (cond.gte !== undefined) return Number(v) >= Number(cond.gte);
   if (cond.in  !== undefined) return Array.isArray(cond.in) && cond.in.includes(v);
@@ -29,7 +29,7 @@ function computeRate(program, input) {
     // optionale Boni (WPB/SerSan) – gedeckelt
     let boni = 0;
     if (f.optional_boni) {
-      if (input.has_wpb_bonus && f.optional_boni.WPB)    boni += f.optional_boni.WPB;
+      if (input.has_wpb_bonus && f.optional_boni.WPB)      boni += f.optional_boni.WPB;
       if (input.has_sersan_bonus && f.optional_boni.SerSan) boni += f.optional_boni.SerSan;
       const cap = f.optional_boni.boni_cap_pct || program.calculation?.total_bonus_cap_pct || boni;
       rate += Math.min(boni, cap);
@@ -42,9 +42,7 @@ function computeRate(program, input) {
     rate = f.base_rate_pct || 0;
 
     // iSFP
-    if (f.isfp_bonus_pct && input.has_isfp) {
-      rate += f.isfp_bonus_pct;
-    }
+    if (f.isfp_bonus_pct && input.has_isfp) rate += f.isfp_bonus_pct;
 
     // generische Boni
     if (Array.isArray(f.bonuses)) {
@@ -117,7 +115,6 @@ exports.handler = async (event) => {
       body: JSON.stringify({ ok: true, input, results }, null, 2)
     };
   } catch (err) {
-    // Saubere Fehlerausgabe im Frontend
     return {
       statusCode: 500,
       headers: { 'content-type': 'application/json' },
