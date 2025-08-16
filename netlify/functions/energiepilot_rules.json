@@ -1,0 +1,580 @@
+{
+  "metadata": {
+    "name": "EnergiePilot Förderregeln (KfW + BAFA)",
+    "version": "0.3.0"
+  },
+  "globals": {
+    "currency": "EUR",
+    "bafa_em": {
+      "zuschuss_max_total_pct": 70,
+      "cost_cap_eur_per_m2_nutzflaeche": 500
+    },
+    "beg_em_credit_cap_eur": 5000000
+  },
+  "programs": [
+    {
+      "key": "KFW_270",
+      "agency": "KfW",
+      "program_no": "270",
+      "label": "Erneuerbare Energien – Standard",
+      "measure": [
+        "PV",
+        "Wind",
+        "Biomasse",
+        "Geothermie",
+        "Speicher",
+        "Netzintegration",
+        "H2-Elektrolyse"
+      ],
+      "funding": {
+        "type": "kredit",
+        "base_rate_pct": null,
+        "max_amount_eur": 150000000
+      },
+      "eligibility_if": [
+        {
+          "field": "applicant_type",
+          "in": [
+            "unternehmen",
+            "freiberufler",
+            "land_forst",
+            "juristische_person",
+            "oeffentlich_rechtlich",
+            "privat_bei_einspeisung"
+          ]
+        }
+      ],
+      "technical_requirements": [
+        {
+          "rule": "projekt_bezug_ee_anlage_oder_infrastruktur",
+          "required": true
+        }
+      ],
+      "calculation": {
+        "notes": [
+          "Laufzeit bis 30J, bis 5 tilgungsfreie Jahre, Zinsbindung bis 20J, Bereitstellung ab 7. Monat"
+        ]
+      }
+    },
+    {
+      "key": "KFW_261",
+      "agency": "KfW",
+      "program_no": "261",
+      "label": "BEG WG – Effizienzhaus (Kredit mit Tilgungszuschuss)",
+      "measure": [
+        "Sanierung zum Effizienzhaus"
+      ],
+      "funding": {
+        "type": "kredit_tilgungszuschuss",
+        "base_rate_pct_by_eh": {
+          "EH85": 5,
+          "EH70": 10,
+          "EH55": 15,
+          "EH40": 20
+        },
+        "ee_class_bonus_pct": 5,
+        "optional_boni": {
+          "WPB": 10,
+          "SerSan": 15,
+          "boni_cap_pct": 20
+        },
+        "max_amount_eur_per_we": {
+          "base": 120000,
+          "with_ee_class": 150000
+        }
+      },
+      "eligibility_if": [
+        {
+          "field": "is_residential",
+          "eq": true
+        },
+        {
+          "field": "target_eh_class",
+          "in": [
+            "EH85",
+            "EH70",
+            "EH55",
+            "EH40",
+            "EH_Denkmal"
+          ]
+        }
+      ],
+      "technical_requirements": [
+        {
+          "rule": "ee_class_share_heat_cooling_pct_min",
+          "value": 65,
+          "applies_if": {
+            "field": "use_ee_class",
+            "eq": true
+          }
+        },
+        {
+          "rule": "expert_required_bza_bnd",
+          "required": true
+        }
+      ],
+      "calculation": {
+        "total_bonus_cap_pct": 20,
+        "notes": [
+          "Tilgungszuschuss = EH-Rate + EE + Boni (gedeckelt)."
+        ]
+      }
+    },
+    {
+      "key": "KFW_458",
+      "agency": "KfW",
+      "program_no": "458",
+      "label": "BEG Heizungsförderung – Wohngebäude (Zuschuss)",
+      "measure": [
+        "Heizungstausch",
+        "Gebäudenetz-/Wärmenetzanschluss",
+        "Heizungsunterstützung"
+      ],
+      "funding": {
+        "type": "zuschuss",
+        "base_rate_pct": 30,
+        "bonuses": [
+          {
+            "name": "effizienz_bonus",
+            "add_pct": 5,
+            "if_all": [
+              {
+                "field": "hp_effizienzbonus_criteria_met",
+                "eq": true
+              }
+            ]
+          },
+          {
+            "name": "klimageschwindigkeit",
+            "add_pct_max": 20,
+            "if_all": [
+              {
+                "field": "old_oil_or_old_gas",
+                "eq": true
+              }
+            ]
+          },
+          {
+            "name": "einkommen_bonus",
+            "add_pct": 30,
+            "if_all": [
+              {
+                "field": "income_zu_verst_eur",
+                "lte": 40000
+              }
+            ]
+          }
+        ]
+      },
+      "eligibility_if": [
+        {
+          "field": "building_is_bestand",
+          "eq": true
+        },
+        {
+          "field": "building_age_years",
+          "gte": 5
+        }
+      ],
+      "technical_requirements": [
+        {
+          "rule": "system_must_meet_bafa_tech_requirements",
+          "required": true
+        }
+      ],
+      "caps": {
+        "zuschuss_total_cap_pct": 70
+      },
+      "process": {
+        "needs": [
+          "BzA_vor_Vorhabenstart",
+          "Vertrag_mit_Bedingung",
+          "BnD_nach_Umsetzung"
+        ]
+      }
+    },
+    {
+      "key": "KFW_358_359",
+      "agency": "KfW",
+      "program_no": "358/359",
+      "label": "BEG EM – Ergänzungskredit",
+      "measure": [
+        "Ergänzungskredit zu BEG-EM-Zuschuss"
+      ],
+      "funding": {
+        "type": "kredit",
+        "base_rate_pct": null,
+        "max_amount_eur": null
+      },
+      "eligibility_if": [
+        {
+          "field": "has_beg_em_zuschuss_zusage",
+          "eq": true
+        },
+        {
+          "field": "beg_em_zusage_age_months",
+          "lte": 12
+        }
+      ],
+      "varianten": {
+        "kfw_358_plus": {
+          "only_if_all": [
+            {
+              "field": "self_use",
+              "eq": true
+            },
+            {
+              "field": "income_zu_verst_eur",
+              "lte": 90000
+            }
+          ]
+        }
+      }
+    },
+    {
+      "key": "KFW_308",
+      "agency": "KfW",
+      "program_no": "308",
+      "label": "Jung kauft Alt – Kredit",
+      "measure": [
+        "Kauf + Pflichtsanierung"
+      ],
+      "funding": {
+        "type": "kredit",
+        "max_amount_eur_range": [
+          100000,
+          150000
+        ]
+      },
+      "eligibility_if": [
+        {
+          "field": "has_child_under_18",
+          "eq": true
+        },
+        {
+          "field": "income_zu_verst_eur",
+          "lte": 90000
+        },
+        {
+          "field": "owns_residential_property_today",
+          "eq": false
+        },
+        {
+          "field": "energy_class_at_purchase",
+          "in": [
+            "F",
+            "G",
+            "H"
+          ]
+        }
+      ],
+      "technical_requirements": [
+        {
+          "rule": "sanierung_zu_eh_min",
+          "value": "EH70EE_or_EH_Denkmal_EE"
+        },
+        {
+          "rule": "sanierung_deadline_months",
+          "value": 54
+        }
+      ],
+      "usage_constraints": [
+        {
+          "rule": "self_use_min_years",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "key": "BAFA_EM_HUELLE",
+      "agency": "BAFA",
+      "program_no": "BEG EM",
+      "label": "Gebäudehülle",
+      "measure": [
+        "Dämmung",
+        "Fenster",
+        "Außentüren"
+      ],
+      "funding": {
+        "type": "zuschuss",
+        "base_rate_pct": 15,
+        "isfp_bonus_pct": 5
+      },
+      "eligibility_if": [
+        {
+          "field": "is_residential_or_nonres",
+          "eq": true
+        }
+      ],
+      "technical_requirements": [
+        {
+          "rule": "mindestanforderungen_bauteile",
+          "required": true
+        }
+      ],
+      "caps": {
+        "cost_cap_eur_per_m2": 500,
+        "zuschuss_total_cap_pct": 70
+      }
+    },
+    {
+      "key": "BAFA_EM_ANLAGENTECHNIK",
+      "agency": "BAFA",
+      "program_no": "BEG EM",
+      "label": "Anlagentechnik (außer Heizung)",
+      "measure": [
+        "MSR",
+        "Lüftung"
+      ],
+      "funding": {
+        "type": "zuschuss",
+        "base_rate_pct": 15,
+        "isfp_bonus_pct": 5
+      },
+      "eligibility_if": [
+        {
+          "field": "is_residential_or_nonres",
+          "eq": true
+        }
+      ],
+      "technical_requirements": [
+        {
+          "rule": "mindestanforderungen_anlagentechnik",
+          "required": true
+        }
+      ],
+      "caps": {
+        "zuschuss_total_cap_pct": 70
+      }
+    },
+    {
+      "key": "BAFA_EM_WAERMEPUMPE",
+      "agency": "BAFA",
+      "program_no": "BEG EM",
+      "label": "Wärmepumpe",
+      "measure": [
+        "Heizungstausch_WP"
+      ],
+      "funding": {
+        "type": "zuschuss",
+        "base_rate_pct": 30,
+        "bonuses": [
+          {
+            "name": "effizienz_bonus_wp",
+            "add_pct": 5,
+            "if_all": [
+              {
+                "field": "wp_jahresarbeitszahl_oder_eta",
+                "ge": "min_threshold_by_source"
+              }
+            ]
+          },
+          {
+            "name": "klimageschwindigkeit",
+            "add_pct_max": 20,
+            "if_all": [
+              {
+                "field": "old_oil_or_old_gas",
+                "eq": true
+              }
+            ]
+          },
+          {
+            "name": "einkommen_bonus",
+            "add_pct": 30,
+            "if_all": [
+              {
+                "field": "income_zu_verst_eur",
+                "lte": 40000
+              }
+            ]
+          }
+        ]
+      },
+      "technical_requirements": [
+        {
+          "rule": "wp_min_effizienz",
+          "value": {
+            "luft": ">=Schwellenwert",
+            "sole": ">=Schwellenwert",
+            "wasser": ">=Schwellenwert"
+          }
+        },
+        {
+          "rule": "grid_ready_interface_from_year",
+          "value": 2025
+        },
+        {
+          "rule": "natural_refrigerant_from_year",
+          "value": 2028
+        }
+      ],
+      "caps": {
+        "zuschuss_total_cap_pct": 70
+      }
+    },
+    {
+      "key": "BAFA_EM_BIOMASSE",
+      "agency": "BAFA",
+      "program_no": "BEG EM",
+      "label": "Biomasseheizung",
+      "measure": [
+        "Heizungstausch_Biomasse"
+      ],
+      "funding": {
+        "type": "zuschuss",
+        "base_rate_pct": 30,
+        "bonuses": [
+          {
+            "name": "klimageschwindigkeit",
+            "add_pct_max": 20,
+            "if_all": [
+              {
+                "field": "old_oil_or_old_gas",
+                "eq": true
+              }
+            ]
+          },
+          {
+            "name": "einkommen_bonus",
+            "add_pct": 30,
+            "if_all": [
+              {
+                "field": "income_zu_verst_eur",
+                "lte": 40000
+              }
+            ]
+          }
+        ],
+        "fixed_addons_eur": [
+          {
+            "name": "emissionsminderungszuschlag",
+            "amount_eur": 2500,
+            "if_all": [
+              {
+                "field": "biomasse_emissionswert_unterschreitet_grenzwert",
+                "eq": true
+              }
+            ]
+          }
+        ]
+      },
+      "technical_requirements": [
+        {
+          "rule": "min_eta_s",
+          "value": 81
+        },
+        {
+          "rule": "pufferspeicher_pflicht",
+          "required": true
+        },
+        {
+          "rule": "emissionsgrenzwerte_pm",
+          "value_mg_m3": 2.5
+        }
+      ],
+      "caps": {
+        "zuschuss_total_cap_pct": 70
+      }
+    },
+    {
+      "key": "BAFA_EM_SOLARTHERMIE",
+      "agency": "BAFA",
+      "program_no": "BEG EM",
+      "label": "Solarthermie",
+      "measure": [
+        "Solarthermieanlage"
+      ],
+      "funding": {
+        "type": "zuschuss",
+        "base_rate_pct": 30,
+        "bonuses": [
+          {
+            "name": "isfp",
+            "add_pct": 5,
+            "if_all": [
+              {
+                "field": "has_isfp",
+                "eq": true
+              }
+            ]
+          },
+          {
+            "name": "klimageschwindigkeit",
+            "add_pct_max": 20,
+            "if_all": [
+              {
+                "field": "old_oil_or_old_gas",
+                "eq": true
+              }
+            ]
+          },
+          {
+            "name": "einkommen_bonus",
+            "add_pct": 30,
+            "if_all": [
+              {
+                "field": "income_zu_verst_eur",
+                "lte": 40000
+              }
+            ]
+          }
+        ]
+      },
+      "technical_requirements": [
+        {
+          "rule": "kollektoren_effizienz_norm",
+          "required": true
+        }
+      ],
+      "caps": {
+        "zuschuss_total_cap_pct": 70
+      }
+    },
+    {
+      "key": "BAFA_EM_HO_EFFIZIENZ",
+      "agency": "BAFA",
+      "program_no": "BEG EM",
+      "label": "Heizungsoptimierung – Effizienz",
+      "measure": [
+        "Hydraulischer Abgleich",
+        "Hocheffizienzpumpe",
+        "Regelung"
+      ],
+      "funding": {
+        "type": "zuschuss",
+        "base_rate_pct": 15,
+        "isfp_bonus_pct": 5
+      },
+      "technical_requirements": [
+        {
+          "rule": "hydraulischer_abgleich_doku",
+          "required": true
+        }
+      ],
+      "caps": {
+        "zuschuss_total_cap_pct": 70
+      }
+    },
+    {
+      "key": "BAFA_EM_HO_EMISSION",
+      "agency": "BAFA",
+      "program_no": "BEG EM",
+      "label": "Heizungsoptimierung – Emissionsminderung (Biomasse)",
+      "measure": [
+        "Staubminderungseinrichtung",
+        "Optimierungsmaßnahmen"
+      ],
+      "funding": {
+        "type": "zuschuss",
+        "base_rate_pct": 50
+      },
+      "technical_requirements": [
+        {
+          "rule": "massnahme_in_katalog_emissionsminderung",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
