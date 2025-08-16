@@ -1,3 +1,4 @@
+cat > netlify.toml <<'EOF'
 # netlify.toml — minimal & stabil
 
 [build]
@@ -7,8 +8,8 @@
 [functions]
   included_files = ["netlify/functions/energiepilot_rules.json"]
 
-# HTML nicht cachen, damit Änderungen sofort sichtbar sind
 [[headers]]
   for = "/index.html"
   [headers.values]
     Cache-Control = "no-store, must-revalidate"
+EOF
