@@ -3,166 +3,226 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EnergiePilot – MVP</title>
+  <title>EnergiePilot – Förder-Check (MVP)</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem; background: #f7fafc; }
-    .wrap { max-width: 900px; margin: 0 auto; background: #fff; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-    h1 { margin-top: 0; }
-    fieldset { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 1rem; }
-    legend { padding: 0 .5rem; font-weight: 700; color: #2d3748; }
-    label { display: block; margin: .35rem 0 .15rem; font-size: .95rem; color: #2d3748; }
+    :root { --bg:#f7fafc; --card:#fff; --text:#1f2937; --muted:#64748b; --line:#e2e8f0; --brand:#2563eb; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"; background: var(--bg); color: var(--text); margin:0; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 24px; }
+    .card { background: var(--card); border-radius: 16px; box-shadow: 0 6px 24px rgba(0,0,0,.06); padding: 24px; }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    .hint { color: var(--muted); margin: 0 0 16px; }
+    fieldset { border: 1px solid var(--line); border-radius: 12px; margin: 14px 0; padding: 12px; }
+    legend { padding: 0 8px; font-weight: 700; color: #334155; }
+    label { display: block; margin: 8px 0 6px; font-size: 0.95rem; }
     input, select { width: 100%; padding: .6rem .7rem; border: 1px solid #cbd5e0; border-radius: 10px; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .btn { background: #2563eb; border: none; color: #fff; padding: .8rem 1.1rem; border-radius: 10px; cursor: pointer; font-weight: 700; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .btn { background: var(--brand); color: #fff; font-weight: 700; border: 0; border-radius: 10px; padding: .8rem 1.1rem; cursor: pointer; margin-top: 8px; }
     .btn:disabled { background: #94a3b8; cursor: not-allowed; }
-    pre { background: #0b1021; color: #e2e8f0; padding: 1rem; border-radius: 12px; overflow: auto; }
-    .hint { color: #475569; font-size: .9rem; }
+    .out { margin-top: 18px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { padding: .55rem; border-bottom: 1px solid var(--line); }
+    th { text-align: left; }
+    td:nth-child(3), td:nth-child(4) { text-align: right; }
+    .note { color: var(--muted); font-size: .9rem; margin-top: .5rem; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>🚀 EnergiePilot – Förder-Check (MVP)</h1>
-    <p class="hint">Gib ein paar Basisdaten ein. Wir prüfen KfW/BAFA-Programme und berechnen den vorläufigen Zuschuss-Prozentsatz (MVP-Logik).</p>
+    <div class="card">
+      <h1>🚀 EnergiePilot – Förder-Check (MVP)</h1>
+      <p class="hint">Gib die Basisdaten ein. Wir prüfen passende Programme und schätzen den Zuschuss (Invest × Fördersatz). </p>
 
-    <form id="ep-form">
-      <fieldset>
-        <legend>Objekt & Nutzung</legend>
-        <div class="row">
-          <label>Wohngebäude?
-            <select name="is_residential">
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </select>
-          </label>
-          <label>Bestandsgebäude?
-            <select name="building_is_bestand">
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </select>
-          </label>
-        </div>
-        <div class="row">
-          <label>Gebäudealter (Jahre)
-            <input type="number" name="building_age_years" value="20" min="0" />
-          </label>
-          <label>Selbstnutzung?
-            <select name="self_use">
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </select>
-          </label>
-        </div>
-      </fieldset>
+      <form id="ep-form">
+        <fieldset>
+          <legend>Objekt & Nutzung</legend>
+          <div class="row">
+            <label>Wohngebäude?
+              <select name="is_residential">
+                <option value="true" selected>Ja</option>
+                <option value="false">Nein</option>
+              </select>
+            </label>
+            <label>Bestandsgebäude?
+              <select name="building_is_bestand">
+                <option value="true" selected>Ja</option>
+                <option value="false">Nein</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>Gebäudealter (Jahre)
+              <input type="number" name="building_age_years" value="20" min="0" />
+            </label>
+            <label>Selbstnutzung?
+              <select name="self_use">
+                <option value="true" selected>Ja</option>
+                <option value="false">Nein</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
 
-      <fieldset>
-        <legend>Haushalt & Einkommen</legend>
-        <div class="row">
-          <label>Zu versteuerndes Einkommen (€)
-            <input type="number" name="income_zu_verst_eur" value="38000" />
-          </label>
-          <label>Kind(er) unter 18?
-            <select name="has_child_under_18">
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </select>
-          </label>
-        </div>
-      </fieldset>
+        <fieldset>
+          <legend>Haushalt & Einkommen</legend>
+          <div class="row">
+            <label>Zu versteuerndes Einkommen (€)
+              <input type="number" name="income_zu_verst_eur" value="38000" min="0" step="100" />
+            </label>
+            <label>Kind(er) unter 18?
+              <select name="has_child_under_18">
+                <option value="true" selected>Ja</option>
+                <option value="false">Nein</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
 
-      <fieldset>
-        <legend>Heizung / Maßnahme</legend>
-        <div class="row">
-          <label>Altanlage Öl/Gas?
-            <select name="old_oil_or_old_gas">
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </select>
-          </label>
-          <label>iSFP vorhanden?
-            <select name="has_isfp">
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </select>
-          </label>
-        </div>
-        <div class="row">
-          <label>Geplante Maßnahme
-            <select name="measure_selected">
-              <option value="Heizungstausch_WP">Heizungstausch – Wärmepumpe</option>
-              <option value="Solarthermieanlage">Solarthermie</option>
-              <option value="Dämmung">Gebäudehülle – Dämmung</option>
-              <option value="MSR">Anlagentechnik – MSR/Lüftung</option>
-            </select>
-          </label>
-          <label>WP-Quelle (falls WP)
-            <select name="wp_quelle">
-              <option value="luft">Luft</option>
-              <option value="sole">Sole</option>
-              <option value="wasser">Wasser</option>
-            </select>
-          </label>
-        </div>
-        <div class="row">
-          <label>WP Effizienz (JAZ/ηs, grober Wert)
-            <input type="number" name="wp_jahresarbeitszahl_oder_eta" step="0.1" value="3.5" />
-          </label>
-          <label>WP-Effizienzbonus-Kriterien erfüllt?
-            <select name="hp_effizienzbonus_criteria_met">
-              <option value="true">Ja</option>
-              <option value="false">Nein</option>
-            </select>
-          </label>
-        </div>
-      </fieldset>
+        <fieldset>
+          <legend>Heizung / Maßnahme</legend>
+          <div class="row">
+            <label>Altanlage Öl/Gas?
+              <select name="old_oil_or_old_gas">
+                <option value="true" selected>Ja</option>
+                <option value="false">Nein</option>
+              </select>
+            </label>
+            <label>iSFP vorhanden?
+              <select name="has_isfp">
+                <option value="true" selected>Ja</option>
+                <option value="false">Nein</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>Geplante Maßnahme
+              <select name="measure_selected">
+                <option value="Heizungstausch_WP" selected>Heizungstausch – Wärmepumpe</option>
+                <option value="Solarthermieanlage">Solarthermie</option>
+                <option value="Dämmung">Gebäudehülle – Dämmung</option>
+                <option value="MSR">Anlagentechnik – MSR/Lüftung</option>
+              </select>
+            </label>
+            <label>WP-Quelle (falls WP)
+              <select name="wp_quelle">
+                <option value="luft" selected>Luft</option>
+                <option value="sole">Sole</option>
+                <option value="wasser">Wasser</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>WP Effizienz (JAZ/ηs, grob)
+              <input type="number" name="wp_jahresarbeitszahl_oder_eta" step="0.1" value="3.5" />
+            </label>
+            <label>WP-Effizienzbonus-Kriterien erfüllt?
+              <select name="hp_effizienzbonus_criteria_met">
+                <option value="true" selected>Ja</option>
+                <option value="false">Nein</option>
+              </select>
+            </label>
+          </div>
 
-      <fieldset>
-        <legend>Effizienzhaus (optional)</legend>
-        <div class="row">
-          <label>Ziel-EH-Klasse
-            <select name="target_eh_class">
-              <option value="">–</option>
-              <option value="EH85">EH85</option>
-              <option value="EH70">EH70</option>
-              <option value="EH55">EH55</option>
-              <option value="EH40">EH40</option>
-              <option value="EH_Denkmal">EH Denkmal</option>
-            </select>
-          </label>
-          <label>EE-Klasse nutzen?
-            <select name="use_ee_class">
-              <option value="false">Nein</option>
-              <option value="true">Ja</option>
-            </select>
-          </label>
-        </div>
-        <div class="row">
-          <label>Eigentum heute vorhanden?
-            <select name="owns_residential_property_today">
-              <option value="false">Nein</option>
-              <option value="true">Ja</option>
-            </select>
-          </label>
-          <label>Energieklasse beim Kauf (für KfW 308)
-            <select name="energy_class_at_purchase">
-              <option value="">–</option>
-              <option value="F">F</option>
-              <option value="G">G</option>
-              <option value="H">H</option>
-            </select>
-          </label>
-        </div>
-      </fieldset>
+          <!-- NEU: Invest-Feld -->
+          <div class="row">
+            <label>Geschätzte Investkosten (€)
+              <input type="number" name="invest_eur" value="25000" min="0" step="100">
+            </label>
+            <div></div>
+          </div>
+        </fieldset>
 
-      <button class="btn" type="submit">Förder-Check starten</button>
-    </form>
+        <fieldset>
+          <legend>Effizienzhaus (optional)</legend>
+          <div class="row">
+            <label>Ziel-EH-Klasse
+              <select name="target_eh_class">
+                <option value="">–</option>
+                <option value="EH85">EH85</option>
+                <option value="EH70">EH70</option>
+                <option value="EH55">EH55</option>
+                <option value="EH40">EH40</option>
+                <option value="EH_Denkmal">EH Denkmal</option>
+              </select>
+            </label>
+            <label>EE-Klasse nutzen?
+              <select name="use_ee_class">
+                <option value="false" selected>Nein</option>
+                <option value="true">Ja</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>Eigentum heute vorhanden?
+              <select name="owns_residential_property_today">
+                <option value="false" selected>Nein</option>
+                <option value="true">Ja</option>
+              </select>
+            </label>
+            <label>Energieklasse beim Kauf (KfW 308)
+              <select name="energy_class_at_purchase">
+                <option value="">–</option>
+                <option value="F">F</option>
+                <option value="G">G</option>
+                <option value="H">H</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
 
-    <h2>Ergebnis</h2>
-    <pre id="out">Noch keine Anfrage gesendet…</pre>
+        <button class="btn" type="submit">Förder-Check starten</button>
+      </form>
+
+      <div class="out">
+        <h2>Ergebnis</h2>
+        <div id="out">Noch keine Anfrage gesendet…</div>
+      </div>
+    </div>
   </div>
 
   <script>
     const form = document.getElementById('ep-form');
     const out = document.getElementById('out');
+
+    function euro(n) {
+      if (n == null || isNaN(n)) return '–';
+      return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+    }
+
+    function renderTable(data) {
+      const invest = Number(data.input?.invest_eur || 0);
+      const rows = (data.results || []).map(r => {
+        const rate = Number(r.rate_pct || 0);
+        const amount = invest ? Math.round(invest * rate / 100) : null;
+        return `
+          <tr>
+            <td>${r.agency} ${r.program_no}</td>
+            <td>${r.label}</td>
+            <td>${rate ? rate + ' %' : '–'}</td>
+            <td>${invest ? euro(amount) : '–'}</td>
+          </tr>
+        `;
+      }).join('');
+
+      return `
+        <table>
+          <thead>
+            <tr>
+              <th>Programm</th>
+              <th>Bezeichnung</th>
+              <th>Fördersatz</th>
+              <th>geschätzt €</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows || ''}
+          </tbody>
+        </table>
+        <div class="note">
+          Hinweis: einfache MVP-Rechnung (Invest × Fördersatz). Programmspezifische Kostenobergrenzen/Caps können die Auszahlung mindern.
+        </div>
+      `;
+    }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -182,7 +242,7 @@
           body: JSON.stringify(payload)
         });
         const data = await r.json();
-        out.textContent = JSON.stringify(data, null, 2);
+        out.innerHTML = renderTable(data);
       } catch (err) {
         out.textContent = 'Fehler: ' + err.message;
       }
