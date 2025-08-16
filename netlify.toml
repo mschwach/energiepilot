@@ -1,10 +1,15 @@
-[build]
-  publish = "."
-  functions = "netlify/functions"
+# netlify.toml – Konfiguration für Netlify Build & Deploy
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
+[build]
+  publish = "."                 # Statischer Output liegt im Root
+  functions = "netlify/functions"  # Functions-Verzeichnis
+
+# Stelle sicher, dass deine JSON mit ins Build genommen wird
+[[functions]]
+  included_files = ["netlify/functions/energiepilot_rules.json"]
+
+# Optional: Redirect-Regel für Single Page Apps (falls du React/Vue/Next nutzt)
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
