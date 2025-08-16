@@ -1,4 +1,3 @@
-cat > netlify.toml <<'EOF'
 # netlify.toml — minimal & stabil
 
 [build]
@@ -12,4 +11,3 @@ cat > netlify.toml <<'EOF'
   for = "/index.html"
   [headers.values]
     Cache-Control = "no-store, must-revalidate"
-EOF
