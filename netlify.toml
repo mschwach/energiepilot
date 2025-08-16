@@ -1,23 +1,15 @@
-# netlify.toml – Konfiguration für Netlify Build & Deploy
+# netlify.toml — minimal & stabil
 
 [build]
-  publish = "."                      # Statischer Output liegt im Root (index.html)
-  functions = "netlify/functions"    # Functions-Verzeichnis
+  publish   = "."
+  functions = "netlify/functions"
 
-# Stelle sicher, dass die JSON-Regeln mit ins Build gehen
-[[functions]]
+[functions]
+  # falls du die JSON sicher mitnehmen willst (optional)
   included_files = ["netlify/functions/energiepilot_rules.json"]
 
-# Optional: Security-Header (hatte ich vorher schon schlank ergänzt)
+# (optional) HTML nicht cachen, damit Änderungen sofort sichtbar sind
 [[headers]]
-  for = "/*"
+  for = "/index.html"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-
-# Optional: SPA-Redirect (nur nötig, falls du später Client-Routing nutzt)
-# [[redirects]]
-#   from = "/*"
-#   to = "/index.html"
-#   status = 200
+    Cache-Control = "no-store, must-revalidate"
